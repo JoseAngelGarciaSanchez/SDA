@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Regression Modeling Schema</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: #e8e8e8;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4fc3f7;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 10px rgba(79, 195, 247, 0.3);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .flow-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .phase {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border-left: 5px solid;
+            backdrop-filter: blur(10px);
+        }
+        
+        .phase-1 { border-left-color: #ff6b6b; }
+        .phase-2 { border-left-color: #feca57; }
+        .phase-3 { border-left-color: #48dbfb; }
+        .phase-4 { border-left-color: #1dd1a1; }
+        .phase-5 { border-left-color: #ff9ff3; }
+        .phase-6 { border-left-color: #54a0ff; }
+        
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .phase-number {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: white;
+        }
+        
+        .phase-1 .phase-number { background: #ff6b6b; }
+        .phase-2 .phase-number { background: #feca57; color: #333; }
+        .phase-3 .phase-number { background: #48dbfb; color: #333; }
+        .phase-4 .phase-number { background: #1dd1a1; }
+        .phase-5 .phase-number { background: #ff9ff3; color: #333; }
+        .phase-6 .phase-number { background: #54a0ff; }
+        
+        .phase-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .phase-1 .phase-title { color: #ff6b6b; }
+        .phase-2 .phase-title { color: #feca57; }
+        .phase-3 .phase-title { color: #48dbfb; }
+        .phase-4 .phase-title { color: #1dd1a1; }
+        .phase-5 .phase-title { color: #ff9ff3; }
+        .phase-6 .phase-title { color: #54a0ff; }
+        
+        .phase-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .step-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .step-details {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+            line-height: 1.5;
+        }
+        
+        .step-details ul {
+            margin-left: 18px;
+            margin-top: 8px;
+        }
+        
+        .step-details li {
+            margin-bottom: 5px;
+        }
+        
+        .formula {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: inline-block;
+            color: #4fc3f7;
+        }
+        
+        .test-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        
+        .test-name {
+            color: #feca57;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin: 10px 0;
+        }
+        
+        .decision-box {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.1));
+            border: 2px dashed #ff6b6b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .decision-title {
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .solution-box {
+            background: linear-gradient(135deg, rgba(29, 209, 161, 0.2), rgba(29, 209, 161, 0.1));
+            border: 2px solid #1dd1a1;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .solution-title {
+            color: #1dd1a1;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .warning {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+        
+        .success {
+            color: #1dd1a1;
+        }
+        
+        .note {
+            background: rgba(84, 160, 255, 0.1);
+            border-left: 3px solid #54a0ff;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .summary-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border-top: 4px solid;
+        }
+        
+        .summary-card.tests { border-top-color: #ff6b6b; }
+        .summary-card.corrections { border-top-color: #1dd1a1; }
+        .summary-card.estimators { border-top-color: #54a0ff; }
+        
+        .summary-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .summary-card.tests .summary-title { color: #ff6b6b; }
+        .summary-card.corrections .summary-title { color: #1dd1a1; }
+        .summary-card.estimators .summary-title { color: #54a0ff; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            color: #4fc3f7;
+            font-weight: 600;
+        }
+        
+        .model-eq {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #4fc3f7;
+            padding: 20px;
+            background: rgba(79, 195, 247, 0.1);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Linear Regression Modeling - Complete Workflow</h1>
+        
+        <div class="model-eq">
+            y = Xβ + u &nbsp;&nbsp;|&nbsp;&nbsp; E(u) = 0 &nbsp;&nbsp;|&nbsp;&nbsp; V(u) = σ²Iₙ
+        </div>
+        
+        <div class="flow-section">
+            <!-- Phase 1: Pre-Estimation -->
+            <div class="phase phase-1">
+                <div class="phase-header">
+                    <div class="phase-number">1</div>
+                    <div class="phase-title">Pre-Estimation Checks</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📋 Data Inspection</div>
+                        <div class="step-details">
+                            <ul>
+                                <li>Check for missing values</li>
+                                <li>Identify outliers</li>
+                                <li>Examine variable distributions</li>
+                                <li>Look at summary statistics</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🔗 Multicollinearity Check</div>
+                        <div class="step-details">
+                            Check correlation between X variables
+                            <div class="test-box">
+                                <div class="test-name">VIF (Variance Inflation Factor)</div>
+                                <div class="formula">VIF > 10 → Problem</div>
+                                <div style="margin-top: 8px;">High multicollinearity → imprecise estimates, but still unbiased</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📐 Model Specification</div>
+                        <div class="step-details">
+                            <ul>
+                                <li>Choose functional form (linear, log, etc.)</li>
+                                <li>Select relevant variables</li>
+                                <li>Consider theoretical foundations</li>
+                            </ul>
+                            <div class="note">Omitting relevant variables correlated with X → biased estimates!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 2: Estimation -->
+            <div class="phase phase-2">
+                <div class="phase-header">
+                    <div class="phase-number">2</div>
+                    <div class="phase-title">Initial OLS Estimation</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">🧮 Run OLS Regression</div>
+                        <div class="step-details">
+                            <div class="formula">β̂ₒₗₛ = (X'X)⁻¹X'y</div>
+                            <div style="margin-top: 10px;">
+                                <strong>Properties (if assumptions hold):</strong>
+                                <ul>
+                                    <li>Unbiased: E(β̂) = β</li>
+                                    <li>Consistent: plim(β̂) = β</li>
+                                    <li>BLUE (Best Linear Unbiased Estimator)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📊 Initial Results</div>
+                        <div class="step-details">
+                            <ul>
+                                <li>Record coefficients</li>
+                                <li>Note standard errors</li>
+                                <li>Check R² and Adjusted R²</li>
+                                <li>Save residuals for diagnostics</li>
+                            </ul>
+                            <div class="formula">V(β̂) = σ²(X'X)⁻¹</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 3: Diagnostic Tests -->
+            <div class="phase phase-3">
+                <div class="phase-header">
+                    <div class="phase-number">3</div>
+                    <div class="phase-title">Post-Estimation Diagnostic Tests</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📈 Heteroskedasticity Tests</div>
+                        <div class="step-details">
+                            V(uᵢ) varies across observations
+                            <div class="test-box">
+                                <div class="test-name">Breusch-Pagan Test</div>
+                                Regress û² on X variables<br>
+                                H₀: Homoskedasticity
+                            </div>
+                            <div class="test-box">
+                                <div class="test-name">White Test</div>
+                                Regress û² on X, X², and cross-products<br>
+                                H₀: Homoskedasticity
+                            </div>
+                            <div class="note">Common in cross-sectional data (e.g., firm size effects)</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🔄 Autocorrelation Tests</div>
+                        <div class="step-details">
+                            uₜ correlated with uₜ₋₁, uₜ₋₂, ...
+                            <div class="test-box">
+                                <div class="test-name">Durbin-Watson Test</div>
+                                <div class="formula">DW ≈ 2(1 - ρ̂)</div>
+                                <ul style="margin-top: 8px;">
+                                    <li>DW ≈ 2 → No autocorrelation</li>
+                                    <li>DW ≈ 0 → Positive autocorrelation</li>
+                                    <li>DW ≈ 4 → Negative autocorrelation</li>
+                                </ul>
+                                <div class="warning" style="margin-top: 8px;">⚠️ Cannot use with lagged dependent variable</div>
+                            </div>
+                            <div class="test-box">
+                                <div class="test-name">Breusch-Godfrey Test</div>
+                                For higher-order autocorrelation<br>
+                                Works with lagged dependent variable<br>
+                                <div class="formula">(N-p)·R² ~ χ²(p)</div>
+                            </div>
+                            <div class="note">Common in time series data</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🎯 Endogeneity Test</div>
+                        <div class="step-details">
+                            E(X'u) ≠ 0
+                            <div class="test-box">
+                                <div class="test-name">Hausman Test (Durbin-Wu-Hausman)</div>
+                                Compare OLS vs IV estimates<br>
+                                H₀: X is exogenous (OLS consistent)
+                                <div class="formula">H = (β̂ᵢᵥ - β̂ₒₗₛ)'[V(β̂ᵢᵥ) - V(β̂ₒₗₛ)]⁻¹(β̂ᵢᵥ - β̂ₒₗₛ) ~ χ²</div>
+                            </div>
+                            <div class="note">
+                                <strong>Sources of endogeneity:</strong>
+                                <ul>
+                                    <li>Omitted variables</li>
+                                    <li>Measurement error</li>
+                                    <li>Simultaneous equations</li>
+                                    <li>Selection bias</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 4: Corrections -->
+            <div class="phase phase-4">
+                <div class="phase-header">
+                    <div class="phase-number">4</div>
+                    <div class="phase-title">Corrections & Solutions</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">🔧 Heteroskedasticity Solutions</div>
+                        <div class="step-details">
+                            <div class="decision-box">
+                                <div class="decision-title">⚠️ If Heteroskedasticity Detected:</div>
+                                OLS still unbiased, but wrong standard errors → invalid tests
+                            </div>
+                            <div class="solution-box">
+                                <div class="solution-title">Option 1: Robust Standard Errors (Preferred)</div>
+                                <div class="formula">V̂(β̂) = (X'X)⁻¹(Σû²ᵢXᵢXᵢ')(X'X)⁻¹</div>
+                                Use "robust" or "White" standard errors<br>
+                                Keep OLS estimates, fix inference
+                            </div>
+                            <div class="solution-box">
+                                <div class="solution-title">Option 2: Weighted Least Squares (WLS/FGLS)</div>
+                                <div class="formula">β̂ₐₗₛ = (X'Ω⁻¹X)⁻¹X'Ω⁻¹y</div>
+                                <ol style="margin-left: 18px; margin-top: 8px;">
+                                    <li>Run OLS, save residuals</li>
+                                    <li>Regress log(û²) on X</li>
+                                    <li>Compute weights from predictions</li>
+                                    <li>Run weighted regression</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🔧 Autocorrelation Solutions</div>
+                        <div class="step-details">
+                            <div class="decision-box">
+                                <div class="decision-title">⚠️ If Autocorrelation Detected:</div>
+                                First, consider if model is misspecified!<br>
+                                Try: add lags, use growth rates, log transform
+                            </div>
+                            <div class="solution-box">
+                                <div class="solution-title">Cochrane-Orcutt / Prais-Winsten</div>
+                                For AR(1): uₜ = ρuₜ₋₁ + εₜ
+                                <ol style="margin-left: 18px; margin-top: 8px;">
+                                    <li>Estimate ρ̂ from OLS residuals</li>
+                                    <li>Quasi-difference: yₜ - ρ̂yₜ₋₁</li>
+                                    <li>Run OLS on transformed model</li>
+                                    <li>Iterate until ρ̂ converges</li>
+                                </ol>
+                            </div>
+                            <div class="solution-box">
+                                <div class="solution-title">Newey-West Standard Errors</div>
+                                HAC (Heteroskedasticity & Autocorrelation Consistent)<br>
+                                Use when both problems present
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🔧 Endogeneity Solutions</div>
+                        <div class="step-details">
+                            <div class="decision-box">
+                                <div class="decision-title">⚠️ If Endogeneity Detected:</div>
+                                OLS is biased AND inconsistent!<br>
+                                Must use Instrumental Variables (IV)
+                            </div>
+                            <div class="solution-box">
+                                <div class="solution-title">Two-Stage Least Squares (2SLS)</div>
+                                <div class="formula">β̂ᵢᵥ = (X'PᵤX)⁻¹X'Pᵤy</div>
+                                <ol style="margin-left: 18px; margin-top: 8px;">
+                                    <li>Regress X (endogenous) on Z (instruments)</li>
+                                    <li>Get predicted X̂</li>
+                                    <li>Regress y on X̂</li>
+                                </ol>
+                                <div style="margin-top: 10px;">
+                                    <strong>Good instrument Z must be:</strong>
+                                    <ul style="margin-left: 18px;">
+                                        <li>Correlated with X (relevance)</li>
+                                        <li>Uncorrelated with u (exogeneity)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 5: Inference -->
+            <div class="phase phase-5">
+                <div class="phase-header">
+                    <div class="phase-number">5</div>
+                    <div class="phase-title">Statistical Inference</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📏 Individual Coefficient Tests (t-test)</div>
+                        <div class="step-details">
+                            H₀: βⱼ = 0
+                            <div class="formula">t = (β̂ⱼ - 0) / SE(β̂ⱼ) ~ t(N-k)</div>
+                            <ul style="margin-top: 10px;">
+                                <li>|t| > 1.96 → Significant at 5%</li>
+                                <li>|t| > 2.58 → Significant at 1%</li>
+                            </ul>
+                            <div class="note">For large samples: use Normal distribution</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📐 Joint Hypothesis Tests (F-test/Wald)</div>
+                        <div class="step-details">
+                            H₀: Cβ = c (r linear restrictions)
+                            <div class="formula">F = [(SSRᵣ - SSRᵤ)/r] / [SSRᵤ/(N-k)] ~ F(r, N-k)</div>
+                            <div style="margin-top: 10px;">
+                                <strong>For IV estimation (asymptotic):</strong>
+                                <div class="formula">Wald ~ χ²(r)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🎯 IV-Specific Tests</div>
+                        <div class="step-details">
+                            <div class="test-box">
+                                <div class="test-name">Weak Instruments Test</div>
+                                First-stage F-statistic<br>
+                                <span class="warning">F < 10 → Weak instruments problem</span>
+                            </div>
+                            <div class="test-box">
+                                <div class="test-name">Sargan/Hansen Test</div>
+                                Test overidentifying restrictions<br>
+                                H₀: Instruments are valid (exogenous)<br>
+                                <div class="formula">Sargan ~ χ²(p-k)</div>
+                                <div class="warning" style="margin-top: 5px;">Only works if p > k</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 6: Interpretation -->
+            <div class="phase phase-6">
+                <div class="phase-header">
+                    <div class="phase-number">6</div>
+                    <div class="phase-title">Interpretation & Reporting</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📝 Coefficient Interpretation</div>
+                        <div class="step-details">
+                            <table>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Interpretation of β</th>
+                                </tr>
+                                <tr>
+                                    <td>y = βx</td>
+                                    <td>1 unit ↑ in x → β units ↑ in y</td>
+                                </tr>
+                                <tr>
+                                    <td>log(y) = βx</td>
+                                    <td>1 unit ↑ in x → β×100% ↑ in y</td>
+                                </tr>
+                                <tr>
+                                    <td>y = β·log(x)</td>
+                                    <td>1% ↑ in x → β/100 units ↑ in y</td>
+                                </tr>
+                                <tr>
+                                    <td>log(y) = β·log(x)</td>
+                                    <td>1% ↑ in x → β% ↑ in y (elasticity)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📊 Model Quality</div>
+                        <div class="step-details">
+                            <ul>
+                                <li><strong>R²:</strong> Proportion of variance explained</li>
+                                <li><strong>Adjusted R²:</strong> Penalizes extra variables</li>
+                                <li><strong>F-statistic:</strong> Overall model significance</li>
+                                <li><strong>AIC/BIC:</strong> For model comparison</li>
+                            </ul>
+                            <div class="note">
+                                For IV: R² can be negative (not meaningful in usual sense)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">⚠️ Causal Claims</div>
+                        <div class="step-details">
+                            <div class="decision-box">
+                                <div class="decision-title">Can you claim causality?</div>
+                                <ul>
+                                    <li><strong>OLS:</strong> Usually only correlation, unless all confounders controlled</li>
+                                    <li><strong>IV:</strong> Causal interpretation possible (but LATE, not ATE)</li>
+                                    <li><strong>RCT:</strong> Gold standard for causality</li>
+                                </ul>
+                            </div>
+                            <div class="note">
+                                <strong>LATE</strong> = Local Average Treatment Effect (effect on compliers only)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Tables -->
+        <h2 style="color: #4fc3f7; margin: 40px 0 20px; text-align: center;">📋 Quick Reference Tables</h2>
+        
+        <div class="summary-grid">
+            <div class="summary-card tests">
+                <div class="summary-title">🔍 Diagnostic Tests Summary</div>
+                <table>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Test</th>
+                        <th>H₀</th>
+                    </tr>
+                    <tr>
+                        <td>Heteroskedasticity</td>
+                        <td>Breusch-Pagan</td>
+                        <td>Constant variance</td>
+                    </tr>
+                    <tr>
+                        <td>Heteroskedasticity</td>
+                        <td>White</td>
+                        <td>Constant variance</td>
+                    </tr>
+                    <tr>
+                        <td>Autocorrelation (AR1)</td>
+                        <td>Durbin-Watson</td>
+                        <td>ρ = 0</td>
+                    </tr>
+                    <tr>
+                        <td>Autocorrelation (ARp)</td>
+                        <td>Breusch-Godfrey</td>
+                        <td>No autocorr.</td>
+                    </tr>
+                    <tr>
+                        <td>Endogeneity</td>
+                        <td>Hausman</td>
+                        <td>X exogenous</td>
+                    </tr>
+                    <tr>
+                        <td>Instrument validity</td>
+                        <td>Sargan</td>
+                        <td>Z exogenous</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="summary-card corrections">
+                <div class="summary-title">🔧 Corrections Summary</div>
+                <table>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>Heteroskedasticity</td>
+                        <td>Robust (White) SE<br>or WLS/FGLS</td>
+                    </tr>
+                    <tr>
+                        <td>Autocorrelation</td>
+                        <td>Cochrane-Orcutt<br>Prais-Winsten<br>or Newey-West SE</td>
+                    </tr>
+                    <tr>
+                        <td>Both problems</td>
+                        <td>Newey-West (HAC) SE</td>
+                    </tr>
+                    <tr>
+                        <td>Endogeneity</td>
+                        <td>2SLS / IV estimation</td>
+                    </tr>
+                    <tr>
+                        <td>Multicollinearity</td>
+                        <td>Remove variables<br>Ridge regression<br>PCA</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="summary-card estimators">
+                <div class="summary-title">📐 Estimator Properties</div>
+                <table>
+                    <tr>
+                        <th>Estimator</th>
+                        <th>Unbiased</th>
+                        <th>Consistent</th>
+                    </tr>
+                    <tr>
+                        <td>OLS (assumptions met)</td>
+                        <td class="success">✓</td>
+                        <td class="success">✓</td>
+                    </tr>
+                    <tr>
+                        <td>OLS (heterosked.)</td>
+                        <td class="success">✓</td>
+                        <td class="success">✓</td>
+                    </tr>
+                    <tr>
+                        <td>OLS (endogeneity)</td>
+                        <td class="warning">✗</td>
+                        <td class="warning">✗</td>
+                    </tr>
+                    <tr>
+                        <td>GLS (known Ω)</td>
+                        <td class="success">✓</td>
+                        <td class="success">✓</td>
+                    </tr>
+                    <tr>
+                        <td>FGLS (estimated Ω)</td>
+                        <td class="warning">✗ (small n)</td>
+                        <td class="success">✓</td>
+                    </tr>
+                    <tr>
+                        <td>2SLS / IV</td>
+                        <td class="warning">✗ (small n)</td>
+                        <td class="success">✓</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; color: #666; font-size: 0.9rem;">
+            Based on Econometrics Parts 4 & 5 - Sorbonne Data Analytics
+        </div>
+    </div>
+</body>
+</html>
