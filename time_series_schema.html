@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Series Analysis Schema</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: #e8e8e8;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4fc3f7;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 10px rgba(79, 195, 247, 0.3);
+        }
+        
+        h2 {
+            color: #4fc3f7;
+            margin: 40px 0 20px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .flow-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .phase {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border-left: 5px solid;
+            backdrop-filter: blur(10px);
+        }
+        
+        .phase-1 { border-left-color: #ff6b6b; }
+        .phase-2 { border-left-color: #feca57; }
+        .phase-3 { border-left-color: #48dbfb; }
+        .phase-4 { border-left-color: #1dd1a1; }
+        .phase-5 { border-left-color: #ff9ff3; }
+        .phase-6 { border-left-color: #54a0ff; }
+        .phase-7 { border-left-color: #a29bfe; }
+        
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .phase-number {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: white;
+        }
+        
+        .phase-1 .phase-number { background: #ff6b6b; }
+        .phase-2 .phase-number { background: #feca57; color: #333; }
+        .phase-3 .phase-number { background: #48dbfb; color: #333; }
+        .phase-4 .phase-number { background: #1dd1a1; }
+        .phase-5 .phase-number { background: #ff9ff3; color: #333; }
+        .phase-6 .phase-number { background: #54a0ff; }
+        .phase-7 .phase-number { background: #a29bfe; }
+        
+        .phase-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .phase-1 .phase-title { color: #ff6b6b; }
+        .phase-2 .phase-title { color: #feca57; }
+        .phase-3 .phase-title { color: #48dbfb; }
+        .phase-4 .phase-title { color: #1dd1a1; }
+        .phase-5 .phase-title { color: #ff9ff3; }
+        .phase-6 .phase-title { color: #54a0ff; }
+        .phase-7 .phase-title { color: #a29bfe; }
+        
+        .phase-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .step-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .step-details {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+            line-height: 1.5;
+        }
+        
+        .step-details ul {
+            margin-left: 18px;
+            margin-top: 8px;
+        }
+        
+        .step-details li {
+            margin-bottom: 5px;
+        }
+        
+        .formula {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: inline-block;
+            color: #4fc3f7;
+        }
+        
+        .test-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        
+        .test-name {
+            color: #feca57;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin: 10px 0;
+        }
+        
+        .decision-box {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.1));
+            border: 2px dashed #ff6b6b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .decision-title {
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .solution-box {
+            background: linear-gradient(135deg, rgba(29, 209, 161, 0.2), rgba(29, 209, 161, 0.1));
+            border: 2px solid #1dd1a1;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .solution-title {
+            color: #1dd1a1;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .warning {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+        
+        .success {
+            color: #1dd1a1;
+        }
+        
+        .note {
+            background: rgba(84, 160, 255, 0.1);
+            border-left: 3px solid #54a0ff;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .summary-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border-top: 4px solid;
+        }
+        
+        .summary-card.tests { border-top-color: #ff6b6b; }
+        .summary-card.corrections { border-top-color: #1dd1a1; }
+        .summary-card.processes { border-top-color: #54a0ff; }
+        
+        .summary-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .summary-card.tests .summary-title { color: #ff6b6b; }
+        .summary-card.corrections .summary-title { color: #1dd1a1; }
+        .summary-card.processes .summary-title { color: #54a0ff; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            color: #4fc3f7;
+            font-weight: 600;
+        }
+        
+        .model-eq {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #4fc3f7;
+            padding: 20px;
+            background: rgba(79, 195, 247, 0.1);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .flowchart {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .flowchart-title {
+            text-align: center;
+            color: #4fc3f7;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+
+        .flow-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-box {
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 180px;
+        }
+
+        .flow-question {
+            background: linear-gradient(135deg, rgba(254, 202, 87, 0.3), rgba(254, 202, 87, 0.1));
+            border: 2px solid #feca57;
+            color: #feca57;
+        }
+
+        .flow-yes {
+            background: linear-gradient(135deg, rgba(29, 209, 161, 0.3), rgba(29, 209, 161, 0.1));
+            border: 2px solid #1dd1a1;
+            color: #1dd1a1;
+        }
+
+        .flow-no {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.3), rgba(255, 107, 107, 0.1));
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .flow-action {
+            background: linear-gradient(135deg, rgba(84, 160, 255, 0.3), rgba(84, 160, 255, 0.1));
+            border: 2px solid #54a0ff;
+            color: #54a0ff;
+        }
+
+        .flow-arrow {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.5rem;
+        }
+
+        .flow-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Time Series Analysis - Complete Workflow</h1>
+        
+        <div class="model-eq">
+            Yₜ = stochastic process &nbsp;&nbsp;|&nbsp;&nbsp; E(Yₜ) = m &nbsp;&nbsp;|&nbsp;&nbsp; V(Yₜ) = σ² &nbsp;&nbsp;|&nbsp;&nbsp; Cov(Yₜ, Yₜ₊ₕ) = γₕ
+        </div>
+        
+        <div class="flow-section">
+            <!-- Phase 1: Introduction -->
+            <div class="phase phase-1">
+                <div class="phase-header">
+                    <div class="phase-number">1</div>
+                    <div class="phase-title">Understanding Time Series</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📋 Definition</div>
+                        <div class="step-details">
+                            <ul>
+                                <li><strong>Time series:</strong> observations over time of a variable</li>
+                                <li>Indexed by date (day, hour, year, quarter...)</li>
+                                <li>Yₜ is called a <em>stochastic process</em></li>
+                            </ul>
+                            <div class="note">Examples: GDP, unemployment rate, stock prices</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">⚠️ Key Requirement</div>
+                        <div class="step-details">
+                            <div class="decision-box">
+                                <div class="decision-title">Data Must Be Stationary!</div>
+                                Stationarity is crucial because we work with long series.<br>
+                                Non-stationary data leads to <strong>spurious regressions</strong>.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🎯 Spurious Regression Problem</div>
+                        <div class="step-details">
+                            Regressing non-stationary series on each other can yield significant results even if unrelated.
+                            <div class="test-box">
+                                <div class="test-name">Example: Random Walk</div>
+                                <div class="formula">yₜ = yₜ₋₁ + uₜ</div>
+                                <div style="margin-top: 8px;">
+                                    <span class="warning">E(yₜ) = 0 but V(yₜ) = ∞</span><br>
+                                    OLS methods fail with non-stationary data!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 2: Stationarity -->
+            <div class="phase phase-2">
+                <div class="phase-header">
+                    <div class="phase-number">2</div>
+                    <div class="phase-title">Stationarity Definition</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📐 Second Order Stationarity</div>
+                        <div class="step-details">
+                            A process is <strong>second order stationary</strong> if:
+                            <div class="formula">∀t, E(Yₜ) = m (constant mean)</div>
+                            <div class="formula">∀t, V(Yₜ) = σ² < ∞ (constant variance)</div>
+                            <div class="formula">∀t,t+h, Cov(Yₜ, Yₜ₊ₕ) = γₕ</div>
+                            <div class="note">Covariance depends only on the gap h, not on time t</div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">✓ Stationary Series Features</div>
+                        <div class="step-details">
+                            A stationary series should have:
+                            <ul>
+                                <li><span class="success">No trend</span></li>
+                                <li><span class="success">No seasonality</span></li>
+                                <li><span class="success">No time-varying elements</span></li>
+                            </ul>
+                            <div class="test-box">
+                                <div class="test-name">Example: White Noise εₜ</div>
+                                <div class="formula">E(εₜ) = 0, V(εₜ) = σ², Cov(uₜ, uₜ₊ₕ) = 0</div>
+                                <span class="success">This is stationary by definition!</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">✗ Non-Stationary Signs</div>
+                        <div class="step-details">
+                            <div class="decision-box">
+                                <div class="decision-title">Not Stationary If:</div>
+                                <ul>
+                                    <li><strong>Upward/downward trend:</strong> expected value changes with time</li>
+                                    <li><strong>Seasonality:</strong> strong correlation between Yₜ and Yₜ₋₁₂</li>
+                                    <li><strong>Changing variance:</strong> volatility varies over time</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 3: Autocorrelation Functions -->
+            <div class="phase phase-3">
+                <div class="phase-header">
+                    <div class="phase-number">3</div>
+                    <div class="phase-title">Autocorrelation Functions</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📊 Simple Autocorrelation (ACF)</div>
+                        <div class="step-details">
+                            Correlation between Yₜ and Yₜ₊ₕ (h periods apart):
+                            <div class="formula">ρₕ = Cov(Yₜ, Yₜ₊ₕ) / (σYₜ · σYₜ₊ₕ)</div>
+                            <ul style="margin-top: 10px;">
+                                <li>ρₕ ∈ [-1, 1]</li>
+                                <li>Usually decreases quickly with h</li>
+                                <li>For white noise: always around zero</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📊 Sample ACF (Large T)</div>
+                        <div class="step-details">
+                            For large samples:
+                            <div class="formula">ρ̂ₕ = Σ(Yₜ - Ȳ)(Yₜ₊ₕ - Ȳ) / Σ(Yₜ - Ȳ)²</div>
+                            <div class="note">
+                                The graph of ρ̂ₕ as a function of h is called a <strong>correlogram</strong>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <strong>Stata commands:</strong>
+                                <div class="formula">ac variable</div>
+                                <div class="formula">corrgram variable</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📊 Partial Autocorrelation (PACF)</div>
+                        <div class="step-details">
+                            Correlation between Yₜ and Yₜ₋ₕ after removing influence of intermediate lags
+                            <div class="test-box">
+                                <div class="test-name">Partial Correlation Formula</div>
+                                <div class="formula">r₁₂.₃ = (r₁₂ - r₁₃r₂₃) / √[(1-r²₁₃)(1-r²₂₃)]</div>
+                                Removes effect of intermediate variables
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📈 Ljung-Box Q Statistic</div>
+                        <div class="step-details">
+                            Tests if all autocorrelations are zero:
+                            <div class="formula">Q = N(N+2) Σ(ρ²ₕ/(N-h)) → χ²ₘ</div>
+                            <div class="test-box">
+                                <div class="test-name">Hypothesis Test</div>
+                                H₀: All ρₕ = 0 (no autocorrelation)<br>
+                                <span class="warning">If Q large (p-value small) → reject H₀ → not stationary</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 4: Types of Processes -->
+            <div class="phase phase-4">
+                <div class="phase-header">
+                    <div class="phase-number">4</div>
+                    <div class="phase-title">Types of Non-Stationary Processes</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">📉 TS Process (Trend Stationary)</div>
+                        <div class="step-details">
+                            <strong>Deterministic</strong> non-stationary process
+                            <div class="formula">Yₜ = fₜ + uₜ</div>
+                            Where fₜ is a polynomial of time, uₜ is stationary
+                            <div class="test-box">
+                                <div class="test-name">Polynomial of degree 1</div>
+                                <div class="formula">Yₜ = b₀ + b₁t + uₜ</div>
+                            </div>
+                            <div class="solution-box">
+                                <div class="solution-title">Key Property</div>
+                                Effect of a shock at time t is <strong>transitory</strong><br>
+                                Series always returns to its trend line
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📉 DS Process (Difference Stationary)</div>
+                        <div class="step-details">
+                            <strong>Stochastic</strong> non-stationary process
+                            <div class="formula">(1-L)ᵈYₜ = b + uₜ</div>
+                            With L = lag operator, d = integration order
+                            <div class="test-box">
+                                <div class="test-name">Example: d = 1</div>
+                                <div class="formula">Yₜ = Yₜ₋₁ + b + uₜ</div>
+                                <div class="formula">ΔYₜ = Yₜ - Yₜ₋₁ = b + uₜ</div>
+                                First difference is stationary!
+                            </div>
+                            <div class="decision-box">
+                                <div class="decision-title">Key Property</div>
+                                Effect of a shock is <strong>permanent</strong> (but decreasing)<br>
+                                <div class="formula">Yₜ = Y₀ + t·b + Σuᵢ</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🔢 Integration Order</div>
+                        <div class="step-details">
+                            <div class="formula">Yₜ ~ I(d)</div>
+                            d = number of times to differentiate to achieve stationarity
+                            <ul>
+                                <li><strong>I(0):</strong> Stationary</li>
+                                <li><strong>I(1):</strong> First difference is stationary</li>
+                                <li><strong>I(2):</strong> Second difference is stationary</li>
+                            </ul>
+                            <div class="note">
+                                Most economic series are I(1) — use first differences or log differences
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 5: Testing for Stationarity -->
+            <div class="phase phase-5">
+                <div class="phase-header">
+                    <div class="phase-number">5</div>
+                    <div class="phase-title">Testing for Stationarity (Unit Root Tests)</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">🧪 Unit Root Concept</div>
+                        <div class="step-details">
+                            A variable has a <strong>unit root</strong> if its first difference is stationary
+                            <div class="test-box">
+                                <div class="test-name">Why not use regular t-test?</div>
+                                For yₜ = ρyₜ₋₁ + uₜ, we want to test ρ = 1<br>
+                                <span class="warning">But standard tests are invalid for non-stationary data!</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📊 Dickey-Fuller Test</div>
+                        <div class="step-details">
+                            Transform: yₜ - yₜ₋₁ = (ρ-1)yₜ₋₁ + uₜ
+                            <div class="formula">Δyₜ = δyₜ₋₁ + uₜ, where δ = ρ-1</div>
+                            <div class="test-box">
+                                <div class="test-name">Three Forms to Test</div>
+                                <strong>(1) Random walk:</strong>
+                                <div class="formula">Δyₜ = δyₜ₋₁ + uₜ</div>
+                                <strong>(2) With drift:</strong>
+                                <div class="formula">Δyₜ = β₁ + δyₜ₋₁ + uₜ</div>
+                                <strong>(3) With drift + trend:</strong>
+                                <div class="formula">Δyₜ = β₁ + β₂t + δyₜ₋₁ + uₜ</div>
+                            </div>
+                            <div class="note">
+                                H₀: δ = 0 (unit root / non-stationary)<br>
+                                Reject H₀ → yₜ is stationary
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📊 Augmented Dickey-Fuller (ADF)</div>
+                        <div class="step-details">
+                            Use when errors are autocorrelated:
+                            <div class="formula">Δyₜ = β₀ + β₁t + δyₜ₋₁ + Σαᵢ Δyₜ₋ᵢ + uₜ</div>
+                            <div class="test-box">
+                                <div class="test-name">Lag Selection</div>
+                                For quarterly data: m = 4 lags<br>
+                                For monthly data: m = 12 lags
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <strong>Stata command:</strong>
+                                <div class="formula">dfuller variable, lags(4)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📈 Tau Distribution</div>
+                        <div class="step-details">
+                            The test statistic follows a <strong>Tau distribution</strong>, not Student's t
+                            <div class="decision-box">
+                                <div class="decision-title">Critical Values Differ!</div>
+                                Dickey-Fuller tables must be used, not standard t-tables.<br>
+                                Critical values vary by form (1, 2, or 3).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 6: Transformations -->
+            <div class="phase phase-6">
+                <div class="phase-header">
+                    <div class="phase-number">6</div>
+                    <div class="phase-title">Transforming Non-Stationary Series</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">🔧 For DS Process (Unit Root)</div>
+                        <div class="step-details">
+                            <div class="solution-box">
+                                <div class="solution-title">Solution: First Difference</div>
+                                <div class="formula">ΔYₜ = Yₜ - Yₜ₋₁</div>
+                                If ΔYₜ is stationary, use it in regression instead of Yₜ
+                            </div>
+                            <div class="note">
+                                Always verify that ΔYₜ is really stationary using ADF test!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🔧 For TS Process (Trend)</div>
+                        <div class="step-details">
+                            <div class="solution-box">
+                                <div class="solution-title">Solution: Detrending</div>
+                                <ol style="margin-left: 18px; margin-top: 8px;">
+                                    <li>Estimate: yₜ = a + b·t + uₜ</li>
+                                    <li>Compute: ûₜ = yₜ - â - b̂·t</li>
+                                    <li>Use ûₜ (detrended series)</li>
+                                </ol>
+                            </div>
+                            <div class="note">
+                                Trend can be non-linear: yₜ = a + b·t + c·t² + uₜ
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📋 Common Transformations</div>
+                        <div class="step-details">
+                            <table>
+                                <tr>
+                                    <th>Transformation</th>
+                                    <th>Purpose</th>
+                                </tr>
+                                <tr>
+                                    <td>ΔYₜ = Yₜ - Yₜ₋₁</td>
+                                    <td>Remove unit root</td>
+                                </tr>
+                                <tr>
+                                    <td>Δlog(Yₜ)</td>
+                                    <td>Growth rate</td>
+                                </tr>
+                                <tr>
+                                    <td>Yₜ - trend</td>
+                                    <td>Detrending (TS)</td>
+                                </tr>
+                                <tr>
+                                    <td>log(Yₜ)</td>
+                                    <td>Stabilize variance</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Phase 7: Cointegration -->
+            <div class="phase phase-7">
+                <div class="phase-header">
+                    <div class="phase-number">7</div>
+                    <div class="phase-title">Cointegration & Error Correction Models</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">🔗 Cointegration Definition</div>
+                        <div class="step-details">
+                            Two non-stationary series are <strong>cointegrated</strong> if a linear combination is stationary
+                            <div class="formula">Lpceₜ = b₁ + b₂Ldpiₜ + uₜ</div>
+                            <div class="test-box">
+                                <div class="test-name">Key Insight</div>
+                                If uₜ = Lpceₜ - b₁ - b₂Ldpiₜ is stationary, variables are cointegrated!
+                            </div>
+                            <div class="note">
+                                <strong>Economic interpretation:</strong> Long-term equilibrium relationship exists
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">🧪 Engle-Granger Test</div>
+                        <div class="step-details">
+                            Testing for cointegration:
+                            <ol style="margin-left: 18px; margin-top: 8px;">
+                                <li>Estimate: Lpceₜ = b₁ + b₂Ldpiₜ + uₜ</li>
+                                <li>Get residuals: ûₜ</li>
+                                <li>Apply Dickey-Fuller to ûₜ</li>
+                                <li>Use MacKinnon critical values</li>
+                            </ol>
+                            <div class="note">
+                                If ûₜ is stationary → variables are cointegrated → can use levels in regression
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">📊 Error Correction Model (ECM)</div>
+                        <div class="step-details">
+                            If variables are cointegrated, use ECM:
+                            <div class="formula">ΔLpceₜ = a₀ + a₁ΔLdpiₜ + a₂uₜ₋₁ + εₜ</div>
+                            <div class="test-box">
+                                <div class="test-name">Coefficient Interpretation</div>
+                                <ul>
+                                    <li><strong>a₁:</strong> Short-term elasticity</li>
+                                    <li><strong>a₂:</strong> Speed of adjustment (expected negative)</li>
+                                    <li><strong>|a₂|:</strong> % of disequilibrium corrected per period</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">⚖️ ECM Interpretation</div>
+                        <div class="step-details">
+                            <div class="formula">ΔLpceₜ = a₀ + a₁ΔLdpiₜ + a₂[Lpceₜ₋₁ - b₁ - b₂Ldpiₜ₋₁] + εₜ</div>
+                            <div class="decision-box">
+                                <div class="decision-title">Why a₂ < 0?</div>
+                                If uₜ₋₁ > 0 → Lpceₜ₋₁ was too high<br>
+                                → Need Lpceₜ to decrease → ΔLpceₜ < 0<br>
+                                → Hence a₂ must be negative
+                            </div>
+                            <div class="solution-box">
+                                <div class="solution-title">Long vs Short-term</div>
+                                <ul>
+                                    <li>b̂₂ (from level equation): Long-term elasticity</li>
+                                    <li>â₁ (from ECM): Short-term elasticity</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Flowchart -->
+        <div class="flowchart">
+            <div class="flowchart-title">🔀 Decision Flowchart: Handling Non-Stationary Data</div>
+            
+            <div class="flow-row">
+                <div class="flow-box flow-action">
+                    <strong>Start:</strong> Raw time series Yₜ
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <span class="flow-arrow">↓</span>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box flow-question">
+                    <div class="flow-label">Step 1</div>
+                    <strong>Visual inspection:</strong><br>Trend? Seasonality?
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <span class="flow-arrow">↓</span>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box flow-question">
+                    <div class="flow-label">Step 2</div>
+                    <strong>ADF Test:</strong><br>Reject H₀ (δ = 0)?
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box flow-yes">
+                    <strong>YES →</strong><br>Series is stationary!<br>Use as is
+                </div>
+                <span class="flow-arrow">←</span>
+                <span style="color: #666;">or</span>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box flow-no">
+                    <strong>NO →</strong><br>Has unit root<br>Continue ↓
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <span class="flow-arrow" style="margin-left: 300px;">↓</span>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box flow-question">
+                    <div class="flow-label">Step 3</div>
+                    <strong>Take first difference:</strong><br>ΔYₜ = Yₜ - Yₜ₋₁
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <span class="flow-arrow">↓</span>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box flow-question">
+                    <div class="flow-label">Step 4</div>
+                    <strong>ADF on ΔYₜ:</strong><br>Stationary now?
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box flow-yes">
+                    <strong>YES →</strong><br>Yₜ ~ I(1)<br>Use ΔYₜ in regression
+                </div>
+                <span class="flow-arrow">←</span>
+                <span style="color: #666;">or</span>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box flow-no">
+                    <strong>NO →</strong><br>Take Δ²Yₜ<br>Yₜ might be I(2)
+                </div>
+            </div>
+            
+            <div class="flow-row" style="margin-top: 30px;">
+                <div class="flow-box flow-action" style="background: linear-gradient(135deg, rgba(162, 155, 254, 0.3), rgba(162, 155, 254, 0.1)); border-color: #a29bfe; color: #a29bfe;">
+                    <div class="flow-label">For multiple I(1) series</div>
+                    <strong>Test for Cointegration</strong><br>
+                    If cointegrated → Use ECM<br>
+                    If not → Use differences
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Tables -->
+        <h2>📋 Quick Reference Tables</h2>
+        
+        <div class="summary-grid">
+            <div class="summary-card tests">
+                <div class="summary-title">🔍 Stationarity Tests Summary</div>
+                <table>
+                    <tr>
+                        <th>Test</th>
+                        <th>H₀</th>
+                        <th>H₁</th>
+                    </tr>
+                    <tr>
+                        <td>Dickey-Fuller</td>
+                        <td>Unit root (δ = 0)</td>
+                        <td>Stationary</td>
+                    </tr>
+                    <tr>
+                        <td>Augmented DF</td>
+                        <td>Unit root (δ = 0)</td>
+                        <td>Stationary</td>
+                    </tr>
+                    <tr>
+                        <td>Ljung-Box Q</td>
+                        <td>No autocorrelation</td>
+                        <td>Autocorrelation</td>
+                    </tr>
+                    <tr>
+                        <td>Engle-Granger</td>
+                        <td>No cointegration</td>
+                        <td>Cointegration</td>
+                    </tr>
+                </table>
+                <div class="note" style="margin-top: 15px;">
+                    <strong>Remember:</strong> DF test uses Tau distribution, not Student's t!
+                </div>
+            </div>
+            
+            <div class="summary-card corrections">
+                <div class="summary-title">🔧 Transformations Summary</div>
+                <table>
+                    <tr>
+                        <th>Process Type</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>DS (Unit Root)</td>
+                        <td>First difference: ΔYₜ</td>
+                    </tr>
+                    <tr>
+                        <td>TS (Trend)</td>
+                        <td>Detrend: Yₜ - â - b̂t</td>
+                    </tr>
+                    <tr>
+                        <td>Cointegrated I(1)</td>
+                        <td>ECM or levels OK</td>
+                    </tr>
+                    <tr>
+                        <td>Seasonality</td>
+                        <td>Seasonal differencing</td>
+                    </tr>
+                    <tr>
+                        <td>Non-constant variance</td>
+                        <td>Log transformation</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="summary-card processes">
+                <div class="summary-title">📐 Process Properties</div>
+                <table>
+                    <tr>
+                        <th>Process</th>
+                        <th>Shock Effect</th>
+                        <th>Nature</th>
+                    </tr>
+                    <tr>
+                        <td>TS (Trend Stationary)</td>
+                        <td class="success">Transitory</td>
+                        <td>Deterministic</td>
+                    </tr>
+                    <tr>
+                        <td>DS (Difference Stat.)</td>
+                        <td class="warning">Permanent</td>
+                        <td>Stochastic</td>
+                    </tr>
+                    <tr>
+                        <td>White Noise</td>
+                        <td class="success">None</td>
+                        <td>Stationary</td>
+                    </tr>
+                    <tr>
+                        <td>Random Walk</td>
+                        <td class="warning">Permanent</td>
+                        <td>Unit root I(1)</td>
+                    </tr>
+                </table>
+                <div class="note" style="margin-top: 15px;">
+                    <strong>Random Walk:</strong> yₜ = yₜ₋₁ + uₜ<br>
+                    E(yₜ) = 0 but V(yₜ) = ∞
+                </div>
+            </div>
+        </div>
+        
+        <!-- ECM Summary -->
+        <div style="margin-top: 40px;">
+            <div class="phase phase-7" style="border-left-color: #a29bfe;">
+                <div class="phase-header">
+                    <div class="phase-number" style="background: #a29bfe;">📊</div>
+                    <div class="phase-title" style="color: #a29bfe;">ECM Quick Reference</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step-card">
+                        <div class="step-title">Long-term Equation</div>
+                        <div class="step-details">
+                            <div class="formula">Lpceₜ = b₁ + b₂Ldpiₜ + b₃t + uₜ</div>
+                            <ul>
+                                <li>b₂ = long-term elasticity</li>
+                                <li>uₜ = equilibrium error</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">Error Correction Equation</div>
+                        <div class="step-details">
+                            <div class="formula">ΔLpceₜ = a₀ + a₁ΔLdpiₜ + a₂ûₜ₋₁ + εₜ</div>
+                            <ul>
+                                <li>a₁ = short-term elasticity</li>
+                                <li>a₂ = adjustment speed (expected < 0)</li>
+                                <li>|a₂| = % of gap corrected per period</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">Stata Commands</div>
+                        <div class="step-details">
+                            <div class="formula">tsset time_variable</div>
+                            <div class="formula">dfuller variable, lags(4)</div>
+                            <div class="formula">reg Lpce Ldpi t</div>
+                            <div class="formula">predict resid, residuals</div>
+                            <div class="formula">dfuller resid</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; color: #666; font-size: 0.9rem;">
+            Based on Introduction to Time Series - Université Paris 1 Panthéon-Sorbonne
+        </div>
+    </div>
+</body>
+</html>
